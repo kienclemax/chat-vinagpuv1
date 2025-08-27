@@ -6,7 +6,7 @@ import { UsersModule } from './users/users.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { OllamaModule } from './ollama/ollama.module';
-import { ChatGateway } from './chat/chat.gateway';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { ChatGateway } from './chat/chat.gateway';
     ConversationsModule,
     MessagesModule,
     OllamaModule,
+    ChatModule,
   ],
-  providers: [ChatGateway],
 })
 export class AppModule {}
