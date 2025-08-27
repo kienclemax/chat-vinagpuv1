@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { uploadFile as apiUploadFile } from "@/lib/upload-api";
 
 export interface UploadedFile {
   id: string;
@@ -88,22 +89,8 @@ export function useFileUpload(options: FileUploadOptions = {}) {
         // Create preview for images
         const preview = await createPreview(file);
 
-        // Create FormData for upload
-        const formData = new FormData();
-        formData.append("file", file);
-
-        // Upload to backend
-        const response = await fetch("/api/upload", {
-          method: "POST",
-          body: formData,
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error("Upload failed");
-        }
-
-        const result = await response.json();
+        // Upload to backend using API utility
+        const result = await apiUploadFile(file);
 
         const uploadedFile: UploadedFile = {
           id: result.id || Date.now().toString(),

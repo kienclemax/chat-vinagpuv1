@@ -65,6 +65,9 @@ export class UploadController {
   async uploadFile(
     @UploadedFile() file: any,
   ) {
+    console.log('Upload endpoint hit');
+    console.log('File:', file);
+
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
