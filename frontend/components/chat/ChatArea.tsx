@@ -170,7 +170,7 @@ export default function ChatArea({
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col chat-layout">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-chat-border bg-chat-bg">
         <button
@@ -186,7 +186,7 @@ export default function ChatArea({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden h-0 chat-messages-wrapper">
         <MessageList messages={messages} aiResponding={aiResponding} />
       </div>
 

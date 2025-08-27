@@ -103,10 +103,10 @@ export default function MessageList({
   );
 
   return (
-    <div className="flex-1 relative">
+    <div className="flex-1 relative h-full">
       <div
         ref={messagesContainerRef}
-        className="h-full overflow-y-auto scroll-smooth"
+        className="absolute inset-0 overflow-y-auto scroll-smooth chat-messages-container"
         onScroll={handleScroll}
         style={{ scrollBehavior: "smooth" }}
       >

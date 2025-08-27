@@ -58,6 +58,29 @@ body {
   overscroll-behavior: contain;
 }
 
+/* Force scrollable chat messages */
+.chat-messages-container {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  scroll-behavior: smooth !important;
+}
+
+/* Fix flex layout for chat */
+.chat-layout {
+  height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.chat-messages-wrapper {
+  flex: 1 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
 /* Message animations */
 .message-enter {
   opacity: 0;
