@@ -1,9 +1,15 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Bars3Icon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  PaperAirplaneIcon,
+  PaperClipIcon,
+} from "@heroicons/react/24/outline";
 import MessageList from "./MessageList";
+import FileUpload from "../ui/FileUpload";
 import { socketManager } from "@/lib/socket";
+import { UploadedFile } from "@/hooks/useFileUpload";
 
 interface Conversation {
   id: string;
@@ -38,6 +44,8 @@ export default function ChatArea({
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [aiResponding, setAiResponding] = useState(false);
+  const [attachedFiles, setAttachedFiles] = useState<UploadedFile[]>([]);
+  const [showFileUpload, setShowFileUpload] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -62,12 +70,24 @@ export default function ChatArea({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!inputValue.trim() || !conversation || aiResponding) return;
+    if (
+      (!inputValue.trim() && attachedFiles.length === 0) ||
+      !conversation ||
+      aiResponding
+    )
+      return;
 
-    console.log("Sending message:", inputValue.trim());
+    const messageContent = inputValue.trim();
+    const files = attachedFiles;
+
+    console.log("Sending message:", messageContent);
+    console.log("Attached files:", files);
     console.log("Conversation:", conversation);
-    onSendMessage(inputValue.trim());
+
+    onSendMessage(messageContent, files);
     setInputValue("");
+    setAttachedFiles([]);
+    setShowFileUpload(false);
 
     // Reset textarea height
     if (textareaRef.current) {
@@ -190,10 +210,72 @@ export default function ChatArea({
         <MessageList messages={messages} aiResponding={aiResponding} />
       </div>
 
+      {/* File Upload Modal */}
+      {showFileUpload && (
+        <div className="border-t border-chat-border bg-chat-bg p-4">
+          <div className="max-w-4xl mx-auto">
+            <FileUpload
+              onFilesChange={setAttachedFiles}
+              maxFiles={5}
+              className="mb-4"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowFileUpload(false)}
+                className="px-4 py-2 text-sm text-chat-text-secondary hover:text-chat-text transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Input */}
       <div className="border-t border-chat-border bg-chat-bg p-4">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
+          {/* Attached Files Preview */}
+          {attachedFiles.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {attachedFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className="flex items-center gap-2 bg-chat-input px-3 py-2 rounded-lg text-sm"
+                >
+                  <span className="text-chat-text truncate max-w-32">
+                    {file.name}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setAttachedFiles((prev) =>
+                        prev.filter((f) => f.id !== file.id)
+                      )
+                    }
+                    className="text-chat-text-secondary hover:text-red-500 transition-colors"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="relative flex items-end gap-3">
+            {/* Attachment Button */}
+            <button
+              type="button"
+              onClick={() => setShowFileUpload(!showFileUpload)}
+              className={`p-3 rounded-lg transition-colors ${
+                showFileUpload || attachedFiles.length > 0
+                  ? "bg-blue-600 text-white"
+                  : "bg-chat-input text-chat-text-secondary hover:text-chat-text"
+              }`}
+            >
+              <PaperClipIcon className="w-5 h-5" />
+            </button>
+
             <div className="flex-1 relative">
               <textarea
                 ref={textareaRef}
@@ -211,7 +293,10 @@ export default function ChatArea({
 
               <button
                 type="submit"
-                disabled={!inputValue.trim() || aiResponding}
+                disabled={
+                  (!inputValue.trim() && attachedFiles.length === 0) ||
+                  aiResponding
+                }
                 className="absolute right-3 bottom-3 p-2 text-chat-text-secondary hover:text-chat-text disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <PaperAirplaneIcon className="w-5 h-5" />

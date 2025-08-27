@@ -7,6 +7,7 @@ import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { OllamaModule } from './ollama/ollama.module';
 import { ChatModule } from './chat/chat.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { ChatModule } from './chat/chat.module';
     MessagesModule,
     OllamaModule,
     ChatModule,
+    UploadModule,
   ],
 })
 export class AppModule {}

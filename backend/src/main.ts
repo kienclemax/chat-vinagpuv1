@@ -2,17 +2,25 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
+
+  // Serve static files
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/api/uploads/',
+  });
 
   // Enable CORS
   app.enableCors({
     origin: [
       configService.get('FRONTEND_URL') || 'http://localhost:3000',
       'http://localhost:3000',
-      'http://160.250.54.23:3000'
+      'http://160.250.54.23:3000',
+      'https://chat.vinagpu.com',
     ],
     credentials: true,
   });
