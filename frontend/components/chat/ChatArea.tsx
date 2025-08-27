@@ -121,14 +121,14 @@ export default function ChatArea({
         <div className="flex items-center justify-between p-4 border-b border-chat-border bg-chat-bg">
           <button
             onClick={onToggleSidebar}
-            className="lg:hidden p-2 text-chat-text hover:bg-chat-input rounded-md"
+            className="p-2 text-chat-text hover:bg-chat-input rounded-md touch-target"
           >
             <Bars3Icon className="w-5 h-5" />
           </button>
-          <h1 className="text-lg font-semibold text-chat-text">
-            Chat.VinaGPU.com
+          <h1 className="text-lg font-semibold text-chat-text truncate mx-4">
+            {conversation?.title || "Chat.VinaGPU.com"}
           </h1>
-          <div className="w-9 lg:hidden" /> {/* Spacer for mobile */}
+          <div className="w-10" /> {/* Spacer for mobile */}
         </div>
 
         {/* Empty state */}
