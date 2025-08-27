@@ -1,42 +1,45 @@
-'use client'
+"use client";
 
-import { useEffect, useRef } from 'react'
-import { UserIcon, CpuChipIcon } from '@heroicons/react/24/outline'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { useEffect, useRef } from "react";
+import { UserIcon, CpuChipIcon } from "@heroicons/react/24/outline";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface Message {
-  id: string
-  content: string
-  role: 'USER' | 'ASSISTANT' | 'SYSTEM'
-  createdAt: string
-  conversationId: string
+  id: string;
+  content: string;
+  role: "USER" | "ASSISTANT" | "SYSTEM";
+  createdAt: string;
+  conversationId: string;
 }
 
 interface MessageListProps {
-  messages: Message[]
-  aiResponding: boolean
+  messages: Message[];
+  aiResponding: boolean;
 }
 
-export default function MessageList({ messages, aiResponding }: MessageListProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+export default function MessageList({
+  messages,
+  aiResponding,
+}: MessageListProps) {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollToBottom()
-  }, [messages, aiResponding])
+    scrollToBottom();
+  }, [messages, aiResponding]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const TypingIndicator = () => (
     <div className="flex items-center gap-2 p-4">
@@ -49,7 +52,7 @@ export default function MessageList({ messages, aiResponding }: MessageListProps
         <div className="typing-indicator"></div>
       </div>
     </div>
-  )
+  );
 
   return (
     <div className="flex-1 overflow-y-auto">
@@ -67,7 +70,9 @@ export default function MessageList({ messages, aiResponding }: MessageListProps
               <div
                 key={message.id}
                 className={`group relative ${
-                  message.role === 'USER' ? 'bg-chat-bg' : 'bg-chat-input bg-opacity-50'
+                  message.role === "USER"
+                    ? "bg-chat-bg"
+                    : "bg-chat-input bg-opacity-50"
                 }`}
               >
                 <div className="flex gap-4 p-6 max-w-4xl mx-auto">
@@ -75,12 +80,10 @@ export default function MessageList({ messages, aiResponding }: MessageListProps
                   <div className="flex-shrink-0">
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        message.role === 'USER'
-                          ? 'bg-blue-600'
-                          : 'bg-green-600'
+                        message.role === "USER" ? "bg-blue-600" : "bg-green-600"
                       }`}
                     >
-                      {message.role === 'USER' ? (
+                      {message.role === "USER" ? (
                         <UserIcon className="w-5 h-5 text-white" />
                       ) : (
                         <CpuChipIcon className="w-5 h-5 text-white" />
@@ -92,7 +95,7 @@ export default function MessageList({ messages, aiResponding }: MessageListProps
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-sm font-semibold text-chat-text">
-                        {message.role === 'USER' ? 'You' : 'Assistant'}
+                        {message.role === "USER" ? "You" : "Assistant"}
                       </span>
                       <span className="text-xs text-chat-text-secondary">
                         {formatTime(message.createdAt)}
@@ -100,7 +103,7 @@ export default function MessageList({ messages, aiResponding }: MessageListProps
                     </div>
 
                     <div className="prose prose-invert max-w-none">
-                      {message.role === 'USER' ? (
+                      {message.role === "USER" ? (
                         <p className="text-chat-text whitespace-pre-wrap">
                           {message.content}
                         </p>
@@ -109,8 +112,16 @@ export default function MessageList({ messages, aiResponding }: MessageListProps
                           remarkPlugins={[remarkGfm]}
                           className="text-chat-text"
                           components={{
-                            code({ node, inline, className, children, ...props }) {
-                              const match = /language-(\w+)/.exec(className || '')
+                            code({
+                              node,
+                              inline,
+                              className,
+                              children,
+                              ...props
+                            }: any) {
+                              const match = /language-(\w+)/.exec(
+                                className || ""
+                              );
                               return !inline && match ? (
                                 <SyntaxHighlighter
                                   style={oneDark}
@@ -119,13 +130,13 @@ export default function MessageList({ messages, aiResponding }: MessageListProps
                                   className="rounded-md"
                                   {...props}
                                 >
-                                  {String(children).replace(/\n$/, '')}
+                                  {String(children).replace(/\n$/, "")}
                                 </SyntaxHighlighter>
                               ) : (
                                 <code className={className} {...props}>
                                   {children}
                                 </code>
-                              )
+                              );
                             },
                             p: ({ children }) => (
                               <p className="mb-4 last:mb-0 text-chat-text">
@@ -143,7 +154,9 @@ export default function MessageList({ messages, aiResponding }: MessageListProps
                               </ol>
                             ),
                             li: ({ children }) => (
-                              <li className="mb-1 text-chat-text">{children}</li>
+                              <li className="mb-1 text-chat-text">
+                                {children}
+                              </li>
                             ),
                             h1: ({ children }) => (
                               <h1 className="text-2xl font-bold mb-4 text-chat-text">
@@ -205,5 +218,5 @@ export default function MessageList({ messages, aiResponding }: MessageListProps
       </div>
       <div ref={messagesEndRef} />
     </div>
-  )
+  );
 }
