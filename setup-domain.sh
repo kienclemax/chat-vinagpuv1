@@ -43,16 +43,6 @@ server {
     listen 80;
     server_name $DOMAIN;
     
-    # Redirect HTTP to HTTPS
-    return 301 https://\$server_name\$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    server_name $DOMAIN;
-
-    # SSL Configuration (will be added by Certbot)
-    
     # Frontend (Next.js)
     location / {
         proxy_pass http://localhost:$FRONTEND_PORT;
@@ -99,7 +89,6 @@ server {
     add_header X-XSS-Protection "1; mode=block" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "no-referrer-when-downgrade" always;
-    add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
 
     # Gzip compression
     gzip on;
