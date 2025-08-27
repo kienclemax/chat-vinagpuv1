@@ -1,31 +1,31 @@
-'use client'
+"use client";
 
-import { useState, useRef, useEffect } from 'react'
-import { Bars3Icon, PaperAirplaneIcon } from '@heroicons/react/24/outline'
-import MessageList from './MessageList'
-import { socketManager } from '@/lib/socket'
+import { useState, useRef, useEffect } from "react";
+import { Bars3Icon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
+import MessageList from "./MessageList";
+import { socketManager } from "@/lib/socket";
 
 interface Conversation {
-  id: string
-  title: string
-  createdAt: string
-  updatedAt: string
+  id: string;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 interface Message {
-  id: string
-  content: string
-  role: 'USER' | 'ASSISTANT' | 'SYSTEM'
-  createdAt: string
-  conversationId: string
+  id: string;
+  content: string;
+  role: "USER" | "ASSISTANT" | "SYSTEM";
+  createdAt: string;
+  conversationId: string;
 }
 
 interface ChatAreaProps {
-  conversation: Conversation | null
-  messages: Message[]
-  onSendMessage: (content: string) => void
-  sidebarOpen: boolean
-  onToggleSidebar: () => void
+  conversation: Conversation | null;
+  messages: Message[];
+  onSendMessage: (content: string) => void;
+  sidebarOpen: boolean;
+  onToggleSidebar: () => void;
 }
 
 export default function ChatArea({
@@ -35,79 +35,84 @@ export default function ChatArea({
   sidebarOpen,
   onToggleSidebar,
 }: ChatAreaProps) {
-  const [inputValue, setInputValue] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
-  const [aiResponding, setAiResponding] = useState(false)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const typingTimeoutRef = useRef<NodeJS.Timeout>()
+  const [inputValue, setInputValue] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [aiResponding, setAiResponding] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (conversation) {
       // Listen for AI response events
       socketManager.onAIResponseStart(() => {
-        setAiResponding(true)
-      })
+        setAiResponding(true);
+      });
 
       socketManager.onAIResponseEnd(() => {
-        setAiResponding(false)
-      })
+        setAiResponding(false);
+      });
 
       return () => {
-        socketManager.off('ai-response-start')
-        socketManager.off('ai-response-end')
-      }
+        socketManager.off("ai-response-start");
+        socketManager.off("ai-response-end");
+      };
     }
-  }, [conversation])
+  }, [conversation]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!inputValue.trim() || !conversation || aiResponding) return
+    e.preventDefault();
 
-    onSendMessage(inputValue.trim())
-    setInputValue('')
-    
+    if (!inputValue.trim() || !conversation || aiResponding) return;
+
+    console.log("Sending message:", inputValue.trim());
+    console.log("Conversation:", conversation);
+    onSendMessage(inputValue.trim());
+    setInputValue("");
+
     // Reset textarea height
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = "auto";
     }
-  }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInputValue(e.target.value)
-    
+    setInputValue(e.target.value);
+
     // Auto-resize textarea
     if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto'
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${Math.min(
+        textareaRef.current.scrollHeight,
+        200
+      )}px`;
     }
 
     // Handle typing indicators
     if (conversation) {
       if (!isTyping) {
-        setIsTyping(true)
-        socketManager.startTyping(conversation.id)
+        setIsTyping(true);
+        socketManager.startTyping(conversation.id);
       }
 
       // Clear existing timeout
       if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current)
+        clearTimeout(typingTimeoutRef.current);
       }
 
       // Set new timeout to stop typing
       typingTimeoutRef.current = setTimeout(() => {
-        setIsTyping(false)
-        socketManager.stopTyping(conversation.id)
-      }, 1000)
+        setIsTyping(false);
+        socketManager.stopTyping(conversation.id);
+      }, 1000);
     }
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSubmit(e)
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
     }
-  }
+  };
 
   if (!conversation) {
     return (
@@ -120,7 +125,9 @@ export default function ChatArea({
           >
             <Bars3Icon className="w-5 h-5" />
           </button>
-          <h1 className="text-lg font-semibold text-chat-text">ChatGPT Clone</h1>
+          <h1 className="text-lg font-semibold text-chat-text">
+            ChatGPT Clone
+          </h1>
           <div className="w-9 lg:hidden" /> {/* Spacer for mobile */}
         </div>
 
@@ -131,11 +138,14 @@ export default function ChatArea({
               Welcome to ChatGPT Clone
             </h2>
             <p className="text-chat-text-secondary mb-8 max-w-md">
-              Start a new conversation to begin chatting with AI. Your conversations will appear in the sidebar.
+              Start a new conversation to begin chatting with AI. Your
+              conversations will appear in the sidebar.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
               <div className="p-4 border border-chat-border rounded-lg">
-                <h3 className="font-semibold text-chat-text mb-2">💡 Examples</h3>
+                <h3 className="font-semibold text-chat-text mb-2">
+                  💡 Examples
+                </h3>
                 <ul className="text-sm text-chat-text-secondary space-y-1">
                   <li>"Explain quantum computing"</li>
                   <li>"Write a Python function"</li>
@@ -143,7 +153,9 @@ export default function ChatArea({
                 </ul>
               </div>
               <div className="p-4 border border-chat-border rounded-lg">
-                <h3 className="font-semibold text-chat-text mb-2">⚡ Capabilities</h3>
+                <h3 className="font-semibold text-chat-text mb-2">
+                  ⚡ Capabilities
+                </h3>
                 <ul className="text-sm text-chat-text-secondary space-y-1">
                   <li>Real-time responses</li>
                   <li>Code generation</li>
@@ -154,7 +166,7 @@ export default function ChatArea({
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -188,13 +200,15 @@ export default function ChatArea({
                 value={inputValue}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
-                placeholder={aiResponding ? "AI is responding..." : "Type your message..."}
+                placeholder={
+                  aiResponding ? "AI is responding..." : "Type your message..."
+                }
                 disabled={aiResponding}
                 className="w-full px-4 py-3 pr-12 bg-chat-input border border-chat-border rounded-lg text-chat-text placeholder-chat-text-secondary resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                 rows={1}
-                style={{ minHeight: '52px', maxHeight: '200px' }}
+                style={{ minHeight: "52px", maxHeight: "200px" }}
               />
-              
+
               <button
                 type="submit"
                 disabled={!inputValue.trim() || aiResponding}
@@ -204,12 +218,12 @@ export default function ChatArea({
               </button>
             </div>
           </div>
-          
+
           <p className="text-xs text-chat-text-secondary mt-2 text-center">
             Press Enter to send, Shift+Enter for new line
           </p>
         </form>
       </div>
     </div>
-  )
+  );
 }

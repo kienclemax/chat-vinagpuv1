@@ -9,9 +9,10 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtService } from '@nestjs/jwt';
 import { MessagesService } from '../messages/messages.service';
 import { ConversationsService } from '../conversations/conversations.service';
+import { UsersService } from '../users/users.service';
 import { CreateMessageDto } from '../messages/dto/create-message.dto';
 import { Role } from '@prisma/client';
 
@@ -36,10 +37,45 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private messagesService: MessagesService,
     private conversationsService: ConversationsService,
+    private jwtService: JwtService,
+    private usersService: UsersService,
   ) {}
 
-  handleConnection(client: AuthenticatedSocket) {
+  async handleConnection(client: AuthenticatedSocket) {
     console.log(`Client connected: ${client.id}`);
+
+    try {
+      // Extract token from auth header or query
+      const token = client.handshake.auth?.token || client.handshake.query?.token;
+
+      if (!token) {
+        console.log('No token provided, disconnecting client');
+        client.disconnect();
+        return;
+      }
+
+      // Verify JWT token
+      const payload = this.jwtService.verify(token);
+      const user = await this.usersService.findById(payload.sub);
+
+      if (!user) {
+        console.log('Invalid user, disconnecting client');
+        client.disconnect();
+        return;
+      }
+
+      // Attach user to socket
+      client.user = {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+      };
+
+      console.log(`User ${user.username} connected via WebSocket`);
+    } catch (error) {
+      console.log('Authentication failed, disconnecting client:', error.message);
+      client.disconnect();
+    }
   }
 
   handleDisconnect(client: AuthenticatedSocket) {

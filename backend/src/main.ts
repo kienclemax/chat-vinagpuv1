@@ -9,7 +9,11 @@ async function bootstrap() {
 
   // Enable CORS
   app.enableCors({
-    origin: configService.get('FRONTEND_URL') || 'http://localhost:3000',
+    origin: [
+      configService.get('FRONTEND_URL') || 'http://localhost:3000',
+      'http://localhost:3000',
+      'http://160.250.54.23:3000'
+    ],
     credentials: true,
   });
 
@@ -26,9 +30,10 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const port = configService.get('PORT') || 3001;
-  await app.listen(port);
-  
-  console.log(`🚀 Server running on http://localhost:${port}`);
+  await app.listen(port, '0.0.0.0');
+
+  console.log(`🚀 Server running on http://0.0.0.0:${port}`);
+  console.log(`🌐 Also accessible at http://160.250.54.23:${port}`);
 }
 
 bootstrap();
