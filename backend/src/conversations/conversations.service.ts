@@ -79,7 +79,7 @@ export class ConversationsService {
 
   async generateTitle(conversationId: string, userId: string): Promise<string> {
     const conversation = await this.findOne(conversationId, userId);
-    
+
     if (conversation.messages.length === 0) {
       return 'New Conversation';
     }
@@ -90,8 +90,29 @@ export class ConversationsService {
       return 'New Conversation';
     }
 
-    // Simple title generation - take first few words
-    const words = firstUserMessage.content.split(' ').slice(0, 6);
-    return words.join(' ') + (firstUserMessage.content.split(' ').length > 6 ? '...' : '');
+    // Smart title generation
+    let content = firstUserMessage.content.trim();
+
+    // Remove common question words and clean up
+    content = content.replace(/^(what|how|why|when|where|who|can you|could you|please|help me|i want to|i need to)\s+/i, '');
+
+    // Take first meaningful words (max 5-6 words)
+    const words = content.split(' ').slice(0, 5);
+    let title = words.join(' ');
+
+    // Add ellipsis if content is longer
+    if (content.split(' ').length > 5) {
+      title += '...';
+    }
+
+    // Capitalize first letter
+    title = title.charAt(0).toUpperCase() + title.slice(1);
+
+    // Fallback if title is too short
+    if (title.length < 3) {
+      title = 'Chat about ' + firstUserMessage.content.split(' ').slice(0, 3).join(' ');
+    }
+
+    return title;
   }
 }

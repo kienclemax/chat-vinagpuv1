@@ -68,6 +68,32 @@ export default function ChatLayout() {
       socketManager.onAIResponseEnd(() => {
         // Handle AI response end if needed
       });
+
+      // Listen for conversation title updates
+      socketManager
+        .getSocket()
+        ?.on(
+          "conversation-updated",
+          (data: { conversationId: string; title: string }) => {
+            console.log("Conversation updated:", data);
+
+            // Update conversations list
+            setConversations((prev) =>
+              prev.map((conv) =>
+                conv.id === data.conversationId
+                  ? { ...conv, title: data.title }
+                  : conv
+              )
+            );
+
+            // Update current conversation if it's the same one
+            if (currentConversation?.id === data.conversationId) {
+              setCurrentConversation((prev) =>
+                prev ? { ...prev, title: data.title } : null
+              );
+            }
+          }
+        );
     } catch (error) {
       console.error("Failed to initialize socket:", error);
     }

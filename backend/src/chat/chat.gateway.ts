@@ -42,14 +42,41 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: AuthenticatedSocket) {
     console.log(`Client connected: ${client.id}`);
 
-    // For now, skip authentication to test basic functionality
-    client.user = {
-      id: 'cmetmv98d0000d9qq2nq78r01', // Use the actual demo user ID
-      email: 'demo@example.com',
-      username: 'demo_user',
-    };
+    try {
+      // Extract token from query params (sent by frontend)
+      const token = client.handshake.query?.token as string;
 
-    console.log(`Demo user connected via WebSocket`);
+      if (!token) {
+        console.log('No token provided, using fallback user');
+        // Fallback for testing
+        client.user = {
+          id: 'cmeto73d6000ir33i3o2cz9do',
+          email: 'toan@onet.vn',
+          username: 'toan@onet.vn',
+        };
+        return;
+      }
+
+      // Decode JWT token to get user info
+      const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+      console.log('JWT payload:', payload);
+
+      client.user = {
+        id: payload.sub,
+        email: payload.email,
+        username: payload.username,
+      };
+
+      console.log(`User ${client.user.username} connected via WebSocket`);
+    } catch (error) {
+      console.log('Token decode failed, using fallback:', error.message);
+      // Fallback user
+      client.user = {
+        id: 'cmeto73d6000ir33i3o2cz9do',
+        email: 'toan@onet.vn',
+        username: 'toan@onet.vn',
+      };
+    }
   }
 
   handleDisconnect(client: AuthenticatedSocket) {
@@ -139,9 +166,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.user.id,
       );
       const aiMessage = messages[messages.length - 1];
-      
+
       if (aiMessage && aiMessage.role === Role.ASSISTANT) {
         this.server.to(`conversation-${data.conversationId}`).emit('new-message', aiMessage);
+      }
+
+      // Auto-generate title if this is the first user message
+      if (messages.filter(m => m.role === Role.USER).length === 1) {
+        try {
+          const newTitle = await this.conversationsService.generateTitle(data.conversationId, client.user.id);
+          await this.conversationsService.update(data.conversationId, client.user.id, { title: newTitle });
+
+          // Broadcast title update
+          this.server.to(`conversation-${data.conversationId}`).emit('conversation-updated', {
+            conversationId: data.conversationId,
+            title: newTitle
+          });
+        } catch (error) {
+          console.log('Failed to generate title:', error.message);
+        }
       }
 
     } catch (error) {
