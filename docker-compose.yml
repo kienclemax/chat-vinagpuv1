@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: chatgpt_clone_db
+    environment:
+      POSTGRES_DB: chatgpt_clone
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - chatgpt_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: chatgpt_clone_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - chatgpt_network
+
+volumes:
+  postgres_data:
+
+networks:
+  chatgpt_network:
+    driver: bridge
