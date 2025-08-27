@@ -44,6 +44,20 @@ body {
   background: #6b6c7b;
 }
 
+/* Smooth scrolling for chat */
+.scroll-smooth {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure proper scroll container */
+.chat-scroll-container {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
 /* Message animations */
 .message-enter {
   opacity: 0;
@@ -75,7 +89,9 @@ body {
 }
 
 @keyframes typing {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0);
     opacity: 0.5;
   }
@@ -98,7 +114,7 @@ code {
   background-color: #2d2d30;
   padding: 2px 4px;
   border-radius: 3px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
   font-size: 0.875em;
 }
 
