@@ -44,7 +44,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     // For now, skip authentication to test basic functionality
     client.user = {
-      id: 'demo-user-id',
+      id: 'cmetmv98d0000d9qq2nq78r01', // Use the actual demo user ID
       email: 'demo@example.com',
       username: 'demo_user',
     };
@@ -61,17 +61,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: AuthenticatedSocket,
     @MessageBody() data: { conversationId: string },
   ) {
-    if (!client.user) return;
+    console.log('join-conversation called:', data);
+    console.log('client.user:', client.user);
+
+    if (!client.user) {
+      console.log('No user attached to client');
+      return;
+    }
 
     try {
       // Verify user has access to conversation
+      console.log('Checking conversation access for user:', client.user.id, 'conversation:', data.conversationId);
       await this.conversationsService.findOne(data.conversationId, client.user.id);
-      
+
       // Join the conversation room
       client.join(`conversation-${data.conversationId}`);
-      
+      console.log('User joined conversation room:', data.conversationId);
+
       client.emit('joined-conversation', { conversationId: data.conversationId });
     } catch (error) {
+      console.log('Failed to join conversation:', error.message);
       client.emit('error', { message: 'Failed to join conversation' });
     }
   }
