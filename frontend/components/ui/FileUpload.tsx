@@ -1,15 +1,15 @@
-'use client'
+"use client";
 
-import { useRef, useState } from 'react';
-import { 
-  PaperClipIcon, 
-  XMarkIcon, 
+import { useRef, useState, useEffect } from "react";
+import {
+  PaperClipIcon,
+  XMarkIcon,
   DocumentIcon,
   PhotoIcon,
   DocumentTextIcon,
   CloudArrowUpIcon,
-} from '@heroicons/react/24/outline';
-import { useFileUpload, UploadedFile } from '@/hooks/useFileUpload';
+} from "@heroicons/react/24/outline";
+import { useFileUpload, UploadedFile } from "@/hooks/useFileUpload";
 
 interface FileUploadProps {
   onFilesChange: (files: UploadedFile[]) => void;
@@ -17,25 +17,19 @@ interface FileUploadProps {
   className?: string;
 }
 
-export default function FileUpload({ 
-  onFilesChange, 
+export default function FileUpload({
+  onFilesChange,
   maxFiles = 5,
-  className = '' 
+  className = "",
 }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
-  
-  const { 
-    files, 
-    uploading, 
-    error, 
-    addFiles, 
-    removeFile, 
-    clearFiles 
-  } = useFileUpload({ maxFiles });
+
+  const { files, uploading, error, addFiles, removeFile, clearFiles } =
+    useFileUpload({ maxFiles });
 
   // Update parent when files change
-  React.useEffect(() => {
+  useEffect(() => {
     onFilesChange(files);
   }, [files, onFilesChange]);
 
@@ -48,9 +42,9 @@ export default function FileUpload({
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
+    if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
-    } else if (e.type === 'dragleave') {
+    } else if (e.type === "dragleave") {
       setDragActive(false);
     }
   };
@@ -59,16 +53,16 @@ export default function FileUpload({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files) {
       addFiles(e.dataTransfer.files);
     }
   };
 
   const getFileIcon = (type: string) => {
-    if (type.startsWith('image/')) {
+    if (type.startsWith("image/")) {
       return <PhotoIcon className="w-5 h-5" />;
-    } else if (type === 'application/pdf') {
+    } else if (type === "application/pdf") {
       return <DocumentTextIcon className="w-5 h-5" />;
     } else {
       return <DocumentIcon className="w-5 h-5" />;
@@ -76,11 +70,11 @@ export default function FileUpload({
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   return (
@@ -88,9 +82,9 @@ export default function FileUpload({
       {/* Upload Area */}
       <div
         className={`relative border-2 border-dashed rounded-lg p-4 transition-colors ${
-          dragActive 
-            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-            : 'border-chat-border hover:border-blue-400'
+          dragActive
+            ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+            : "border-chat-border hover:border-blue-400"
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -105,14 +99,14 @@ export default function FileUpload({
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx"
         />
-        
+
         <div className="text-center">
           <CloudArrowUpIcon className="mx-auto h-8 w-8 text-chat-text-secondary" />
           <div className="mt-2">
             <p className="text-sm text-chat-text">
               <span className="font-medium text-blue-600 hover:text-blue-500">
                 Click to upload
-              </span>{' '}
+              </span>{" "}
               or drag and drop
             </p>
             <p className="text-xs text-chat-text-secondary mt-1">
@@ -143,7 +137,7 @@ export default function FileUpload({
               Clear all
             </button>
           </div>
-          
+
           <div className="space-y-2 max-h-40 overflow-y-auto">
             {files.map((file) => (
               <div

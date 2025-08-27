@@ -10,9 +10,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { GetUser } from '../auth/get-user.decorator';
-import { User } from '@prisma/client';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 // Allowed file types
 const ALLOWED_MIME_TYPES = [
@@ -65,8 +63,7 @@ export class UploadController {
     }),
   )
   async uploadFile(
-    @UploadedFile() file: Express.Multer.File,
-    @GetUser() user: User,
+    @UploadedFile() file: any,
   ) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
@@ -80,7 +77,6 @@ export class UploadController {
       mimetype: file.mimetype,
       size: file.size,
       url: `/api/uploads/${file.filename}`,
-      uploadedBy: user.id,
       uploadedAt: new Date(),
     };
   }
