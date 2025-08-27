@@ -1,4 +1,4 @@
-# Development Guide
+# Chat.VinaGPU.com - Development Guide
 
 ## Prerequisites
 
@@ -9,19 +9,21 @@
 ## Quick Start
 
 1. **Run the setup script**:
+
    ```bash
    chmod +x setup.sh
    ./setup.sh
    ```
 
 2. **Install and start Ollama**:
+
    ```bash
    # Install Ollama (macOS)
    brew install ollama
-   
+
    # Start Ollama service
    ollama serve
-   
+
    # Pull a model (in another terminal)
    ollama pull llama2
    ```
@@ -36,22 +38,25 @@
 If you prefer to set up manually:
 
 ### 1. Install Dependencies
+
 ```bash
 npm run install:all
 ```
 
 ### 2. Environment Setup
+
 ```bash
 # Backend
 cp backend/.env.example backend/.env
 # Edit backend/.env with your settings
 
-# Frontend  
+# Frontend
 cp frontend/.env.example frontend/.env.local
 # Edit frontend/.env.local with your settings
 ```
 
 ### 3. Database Setup
+
 ```bash
 # Start PostgreSQL
 docker-compose up -d postgres
@@ -64,6 +69,7 @@ npx prisma db seed
 ```
 
 ### 4. Start Services
+
 ```bash
 # Start all services
 npm run dev
@@ -95,12 +101,14 @@ npm run dev:frontend # Frontend on :3000
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/login` - User login
 - `POST /api/auth/register` - User registration
 - `GET /api/auth/profile` - Get user profile
 - `POST /api/auth/validate` - Validate token
 
 ### Conversations
+
 - `GET /api/conversations` - List user conversations
 - `POST /api/conversations` - Create new conversation
 - `GET /api/conversations/:id` - Get conversation with messages
@@ -108,6 +116,7 @@ npm run dev:frontend # Frontend on :3000
 - `DELETE /api/conversations/:id` - Delete conversation
 
 ### Messages
+
 - `POST /api/messages` - Create new message
 - `GET /api/messages/conversation/:id` - Get conversation messages
 - `POST /api/messages/conversation/:id/ai-response` - Generate AI response
@@ -116,6 +125,7 @@ npm run dev:frontend # Frontend on :3000
 ## WebSocket Events
 
 ### Client → Server
+
 - `join-conversation` - Join conversation room
 - `leave-conversation` - Leave conversation room
 - `send-message` - Send new message
@@ -123,6 +133,7 @@ npm run dev:frontend # Frontend on :3000
 - `typing-stop` - Stop typing indicator
 
 ### Server → Client
+
 - `new-message` - New message received
 - `ai-response-start` - AI started responding
 - `ai-response-chunk` - AI response chunk (streaming)
@@ -133,6 +144,7 @@ npm run dev:frontend # Frontend on :3000
 ## Database Schema
 
 ### Users
+
 - `id` - Unique identifier
 - `email` - User email (unique)
 - `username` - Username (unique)
@@ -141,12 +153,14 @@ npm run dev:frontend # Frontend on :3000
 - `avatar` - Optional avatar URL
 
 ### Conversations
+
 - `id` - Unique identifier
 - `title` - Conversation title
 - `userId` - Owner user ID
 - `createdAt`, `updatedAt` - Timestamps
 
 ### Messages
+
 - `id` - Unique identifier
 - `content` - Message content
 - `role` - USER | ASSISTANT | SYSTEM
@@ -157,6 +171,7 @@ npm run dev:frontend # Frontend on :3000
 ## Environment Variables
 
 ### Backend (.env)
+
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/chatgpt_clone"
 JWT_SECRET="your-jwt-secret"
@@ -168,6 +183,7 @@ FRONTEND_URL="http://localhost:3000"
 ```
 
 ### Frontend (.env.local)
+
 ```env
 NEXT_PUBLIC_API_URL="http://localhost:3001"
 NEXT_PUBLIC_WS_URL="http://localhost:3001"
@@ -176,6 +192,7 @@ NEXT_PUBLIC_WS_URL="http://localhost:3001"
 ## Troubleshooting
 
 ### Database Issues
+
 ```bash
 # Reset database
 docker-compose down -v
@@ -184,6 +201,7 @@ cd backend && npx prisma migrate reset
 ```
 
 ### Ollama Issues
+
 ```bash
 # Check if Ollama is running
 curl http://localhost:11434/api/tags
@@ -196,6 +214,7 @@ ollama list
 ```
 
 ### Port Conflicts
+
 - Backend: Change `PORT` in backend/.env
 - Frontend: Use `npm run dev -- -p 3001` to change port
 - Database: Change port mapping in docker-compose.yml
@@ -215,6 +234,7 @@ npm run test
 ## Production Deployment
 
 1. **Build applications**:
+
    ```bash
    npm run build
    ```

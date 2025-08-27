@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up ChatGPT Clone..."
+echo "🚀 Setting up Chat.VinaGPU.com..."
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then

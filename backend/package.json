@@ -1,7 +1,7 @@
 {
-  "name": "chatgpt-clone-backend",
+  "name": "chat-vinagpu-backend",
   "version": "0.0.1",
-  "description": "NestJS backend for ChatGPT clone",
+  "description": "Chat.VinaGPU.com Backend API",
   "author": "",
   "private": true,
   "license": "UNLICENSED",

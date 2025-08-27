@@ -26,7 +26,7 @@ async function main() {
   // Create a sample conversation
   const conversation = await prisma.conversation.create({
     data: {
-      title: 'Welcome to ChatGPT Clone',
+      title: 'Welcome to Chat.VinaGPU.com',
       userId: user.id,
     },
   })
@@ -35,7 +35,7 @@ async function main() {
   await prisma.message.createMany({
     data: [
       {
-        content: 'Hello! Welcome to ChatGPT Clone. How can I help you today?',
+        content: 'Hello! Welcome to Chat.VinaGPU.com. How can I help you today?',
         role: 'ASSISTANT',
         conversationId: conversation.id,
         userId: user.id,

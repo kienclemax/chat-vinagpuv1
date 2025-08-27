@@ -11,7 +11,7 @@ FRONTEND_PORT=3000
 BACKEND_PORT=3001
 SERVER_IP="160.250.54.23"
 
-echo "🚀 Setting up domain $DOMAIN with SSL..."
+echo "🚀 Setting up Chat.VinaGPU.com domain $DOMAIN with SSL..."
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
@@ -124,9 +124,9 @@ systemctl enable snap.certbot.renew.timer
 echo "🔧 Creating systemd services..."
 
 # Backend service
-cat > /etc/systemd/system/chatgpt-backend.service << EOF
+cat > /etc/systemd/system/chat-vinagpu-backend.service << EOF
 [Unit]
-Description=ChatGPT Clone Backend
+Description=Chat.VinaGPU.com Backend
 After=network.target
 
 [Service]
@@ -145,9 +145,9 @@ WantedBy=multi-user.target
 EOF
 
 # Frontend service
-cat > /etc/systemd/system/chatgpt-frontend.service << EOF
+cat > /etc/systemd/system/chat-vinagpu-frontend.service << EOF
 [Unit]
-Description=ChatGPT Clone Frontend
+Description=Chat.VinaGPU.com Frontend
 After=network.target
 
 [Service]
@@ -168,8 +168,8 @@ EOF
 # Enable and start services
 echo "🚀 Enabling and starting services..."
 systemctl daemon-reload
-systemctl enable chatgpt-backend
-systemctl enable chatgpt-frontend
+systemctl enable chat-vinagpu-backend
+systemctl enable chat-vinagpu-frontend
 
 # Update environment files
 echo "📝 Updating environment files..."
@@ -206,8 +206,8 @@ npm run build
 
 # Start services
 echo "▶️ Starting services..."
-systemctl start chatgpt-backend
-systemctl start chatgpt-frontend
+systemctl start chat-vinagpu-backend
+systemctl start chat-vinagpu-frontend
 
 # Setup firewall
 echo "🔥 Configuring firewall..."
@@ -219,7 +219,7 @@ ufw --force enable
 echo ""
 echo "✅ Domain setup completed!"
 echo ""
-echo "🌐 Your ChatGPT Clone is now available at:"
+echo "🌐 Your Chat.VinaGPU.com is now available at:"
 echo "   https://$DOMAIN"
 echo ""
 echo "📊 Service status:"

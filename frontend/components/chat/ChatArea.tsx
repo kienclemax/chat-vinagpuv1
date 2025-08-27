@@ -126,7 +126,7 @@ export default function ChatArea({
             <Bars3Icon className="w-5 h-5" />
           </button>
           <h1 className="text-lg font-semibold text-chat-text">
-            ChatGPT Clone
+            Chat.VinaGPU.com
           </h1>
           <div className="w-9 lg:hidden" /> {/* Spacer for mobile */}
         </div>
@@ -135,7 +135,7 @@ export default function ChatArea({
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-chat-text mb-4">
-              Welcome to ChatGPT Clone
+              Welcome to Chat.VinaGPU.com
             </h2>
             <p className="text-chat-text-secondary mb-8 max-w-md">
               Start a new conversation to begin chatting with AI. Your

@@ -1,20 +1,21 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
-import { Toaster } from 'react-hot-toast'
-import { AuthProvider } from '@/lib/auth-context'
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "@/lib/auth-context";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'ChatGPT Clone',
-  description: 'A ChatGPT clone built with Next.js, NestJS, and Ollama',
-}
+  title: "Chat.VinaGPU.com",
+  description:
+    "AI Chat Platform powered by VinaGPU - Built with Next.js, NestJS, and Ollama",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -26,14 +27,14 @@ export default function RootLayout({
             toastOptions={{
               duration: 4000,
               style: {
-                background: '#40414f',
-                color: '#ececf1',
-                border: '1px solid #565869',
+                background: "#40414f",
+                color: "#ececf1",
+                border: "1px solid #565869",
               },
             }}
           />
         </AuthProvider>
       </body>
     </html>
-  )
+  );
 }
