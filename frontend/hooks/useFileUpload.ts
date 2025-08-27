@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
 export interface UploadedFile {
   id: string;
@@ -18,16 +18,16 @@ export interface FileUploadOptions {
 const DEFAULT_OPTIONS: FileUploadOptions = {
   maxSize: 10 * 1024 * 1024, // 10MB
   allowedTypes: [
-    'image/jpeg',
-    'image/png', 
-    'image/gif',
-    'image/webp',
-    'application/pdf',
-    'text/plain',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "application/pdf",
+    "text/plain",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   ],
   maxFiles: 5,
 };
@@ -39,96 +39,114 @@ export function useFileUpload(options: FileUploadOptions = {}) {
 
   const config = { ...DEFAULT_OPTIONS, ...options };
 
-  const validateFile = useCallback((file: File): string | null => {
-    if (file.size > config.maxSize!) {
-      return `File size must be less than ${(config.maxSize! / 1024 / 1024).toFixed(1)}MB`;
-    }
-
-    if (config.allowedTypes && !config.allowedTypes.includes(file.type)) {
-      return `File type ${file.type} is not supported`;
-    }
-
-    return null;
-  }, [config]);
-
-  const createPreview = useCallback((file: File): Promise<string | undefined> => {
-    return new Promise((resolve) => {
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target?.result as string);
-        reader.readAsDataURL(file);
-      } else {
-        resolve(undefined);
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      if (file.size > config.maxSize!) {
+        return `File size must be less than ${(
+          config.maxSize! /
+          1024 /
+          1024
+        ).toFixed(1)}MB`;
       }
-    });
-  }, []);
 
-  const uploadFile = useCallback(async (file: File): Promise<UploadedFile | null> => {
-    const validationError = validateFile(file);
-    if (validationError) {
-      setError(validationError);
+      if (config.allowedTypes && !config.allowedTypes.includes(file.type)) {
+        return `File type ${file.type} is not supported`;
+      }
+
       return null;
-    }
+    },
+    [config]
+  );
 
-    try {
-      setUploading(true);
-      setError(null);
-
-      // Create preview for images
-      const preview = await createPreview(file);
-
-      // Create FormData for upload
-      const formData = new FormData();
-      formData.append('file', file);
-
-      // Upload to backend
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
+  const createPreview = useCallback(
+    (file: File): Promise<string | undefined> => {
+      return new Promise((resolve) => {
+        if (file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.readAsDataURL(file);
+        } else {
+          resolve(undefined);
+        }
       });
+    },
+    []
+  );
 
-      if (!response.ok) {
-        throw new Error('Upload failed');
+  const uploadFile = useCallback(
+    async (file: File): Promise<UploadedFile | null> => {
+      const validationError = validateFile(file);
+      if (validationError) {
+        setError(validationError);
+        return null;
       }
 
-      const result = await response.json();
+      try {
+        setUploading(true);
+        setError(null);
 
-      const uploadedFile: UploadedFile = {
-        id: result.id || Date.now().toString(),
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        url: result.url,
-        preview,
-      };
+        // Create preview for images
+        const preview = await createPreview(file);
 
-      return uploadedFile;
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed');
-      return null;
-    } finally {
-      setUploading(false);
-    }
-  }, [validateFile, createPreview]);
+        // Create FormData for upload
+        const formData = new FormData();
+        formData.append("file", file);
 
-  const addFiles = useCallback(async (newFiles: FileList | File[]) => {
-    const fileArray = Array.from(newFiles);
-    
-    if (files.length + fileArray.length > config.maxFiles!) {
-      setError(`Maximum ${config.maxFiles} files allowed`);
-      return;
-    }
+        // Upload to backend
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
 
-    const uploadPromises = fileArray.map(uploadFile);
-    const uploadedFiles = await Promise.all(uploadPromises);
-    
-    const validFiles = uploadedFiles.filter((file): file is UploadedFile => file !== null);
-    setFiles(prev => [...prev, ...validFiles]);
-  }, [files.length, config.maxFiles, uploadFile]);
+        if (!response.ok) {
+          throw new Error("Upload failed");
+        }
+
+        const result = await response.json();
+
+        const uploadedFile: UploadedFile = {
+          id: result.id || Date.now().toString(),
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          url: result.url,
+          preview,
+        };
+
+        return uploadedFile;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Upload failed");
+        return null;
+      } finally {
+        setUploading(false);
+      }
+    },
+    [validateFile, createPreview]
+  );
+
+  const addFiles = useCallback(
+    async (newFiles: FileList | File[]) => {
+      const fileArray = Array.from(newFiles);
+
+      if (files.length + fileArray.length > config.maxFiles!) {
+        setError(`Maximum ${config.maxFiles} files allowed`);
+        return;
+      }
+
+      const uploadPromises = fileArray.map(uploadFile);
+      const uploadedFiles = await Promise.all(uploadPromises);
+
+      const validFiles = uploadedFiles.filter(
+        (file): file is UploadedFile => file !== null
+      );
+      setFiles((prev) => [...prev, ...validFiles]);
+    },
+    [files.length, config.maxFiles, uploadFile]
+  );
 
   const removeFile = useCallback((fileId: string) => {
-    setFiles(prev => prev.filter(file => file.id !== fileId));
+    setFiles((prev) => prev.filter((file) => file.id !== fileId));
   }, []);
 
   const clearFiles = useCallback(() => {

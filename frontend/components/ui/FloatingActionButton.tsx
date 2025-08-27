@@ -1,20 +1,20 @@
-'use client'
+"use client";
 
-import { PlusIcon } from '@heroicons/react/24/outline'
-import { useMobile } from '@/hooks/useMobile'
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { useMobile } from "@/hooks/useMobile";
 
 interface FloatingActionButtonProps {
-  onClick: () => void
-  className?: string
+  onClick: () => void;
+  className?: string;
 }
 
-export default function FloatingActionButton({ 
-  onClick, 
-  className = '' 
+export default function FloatingActionButton({
+  onClick,
+  className = "",
 }: FloatingActionButtonProps) {
-  const { isMobile } = useMobile()
+  const { isMobile } = useMobile();
 
-  if (!isMobile) return null
+  if (!isMobile) return null;
 
   return (
     <button
@@ -24,5 +24,5 @@ export default function FloatingActionButton({
     >
       <PlusIcon className="w-6 h-6" />
     </button>
-  )
+  );
 }
